@@ -17,11 +17,14 @@ public class BiosphereWorldType extends WorldType {
 		super("biospheres");
 	}
 
-    @Override
-    public ChunkGenerator<?> createChunkGenerator(World world) {
-        BiomeProviderType<SingleBiomeProviderSettings, SingleBiomeProvider> biomeprovidertype = BiomeProviderType.FIXED;
-        FlatGenerationSettings flatgenerationsettings = FlatGenerationSettings.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, world.getWorldInfo().getGeneratorOptions()));
-        SingleBiomeProviderSettings singlebiomeprovidersettings1 = biomeprovidertype.func_226840_a_(world.getWorldInfo()).setBiome(flatgenerationsettings.getBiome());
-        return new BiosphereChunkGenerator<FlatGenerationSettings>(world, biomeprovidertype.create(singlebiomeprovidersettings1), flatgenerationsettings);
-    }
+	@Override
+	public ChunkGenerator<?> createChunkGenerator(World world) {
+		BiomeProviderType<SingleBiomeProviderSettings, SingleBiomeProvider> biomeprovidertype = BiomeProviderType.FIXED;
+		FlatGenerationSettings flatgenerationsettings = FlatGenerationSettings
+				.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, world.getWorldInfo().getGeneratorOptions()));
+		SingleBiomeProviderSettings singlebiomeprovidersettings1 = biomeprovidertype
+				.func_226840_a_(world.getWorldInfo()).setBiome(flatgenerationsettings.getBiome());
+		return new BiosphereChunkGenerator<FlatGenerationSettings>(world,
+				biomeprovidertype.create(singlebiomeprovidersettings1), flatgenerationsettings);
+	}
 }

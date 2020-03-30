@@ -11,8 +11,8 @@ public class Biospheres {
 	public static final String MODID = "biospheres";
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	public static final BiosphereWorldType worldType = new BiosphereWorldType();
-	
+
 	public Biospheres() {
-		
+
 	}
 }
