@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
@@ -35,7 +34,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 
 	@Override
 	public void makeBase(IWorld worldIn, IChunk chunkIn) {
-		SphereChunk sphereChunk = SphereChunk.get((World) world, chunkIn.getPos());
+		SphereChunk sphereChunk = SphereChunk.get(worldIn, chunkIn.getPos());
 
 		for (BlockPos pos : new BlockPosIterator(chunkIn)) {
 			BlockState blockState = getBlockStateAt(sphereChunk, pos);
@@ -44,11 +43,11 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 	}
 
 	private BlockState getBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
-		double sphereDistance = sphereChunk.getDistance(pos);
-		if (sphereDistance == sphereChunk.radius) {
+		double sphereDistance = sphereChunk.closestSphere.getDistanceToCenter(pos);
+		if (sphereDistance == sphereChunk.closestSphere.radius) {
 			return this.getShellBlockStateAt(sphereChunk, pos);
 		}
-		if (sphereDistance > sphereChunk.radius) {
+		if (sphereDistance > sphereChunk.closestSphere.radius) {
 			return this.getOutsideBlockStateAt(sphereChunk, pos);
 		} else {
 			return Blocks.AIR.getDefaultState();
@@ -56,9 +55,9 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 	}
 
 	private BlockState getOutsideBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
-		if (pos.getY() == sphereChunk.seaLevel
-				&& (Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) < BRIDGE_WIDTH + 1
-						|| Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) < BRIDGE_WIDTH + 1))
+		if (pos.getY() == sphereChunk.closestSphere.seaLevel
+				&& (Math.abs(pos.getX() - sphereChunk.closestSphere.centre.getX()) < BRIDGE_WIDTH + 1
+						|| Math.abs(pos.getZ() - sphereChunk.closestSphere.centre.getZ()) < BRIDGE_WIDTH + 1))
 
 		{
 			return Blocks.OAK_PLANKS.getDefaultState();
@@ -67,12 +66,12 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 	}
 
 	private BlockState getShellBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
-		if (pos.getY() < sphereChunk.seaLevel) { // Below the vertical centre
+		if (pos.getY() < sphereChunk.closestSphere.seaLevel) { // Below the vertical centre
 			return Blocks.STONE.getDefaultState();
 		}
-		if (pos.getY() >= sphereChunk.seaLevel + BRIDGE_HEIGHT
-				|| Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) > BRIDGE_WIDTH
-						&& Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) > BRIDGE_WIDTH) {
+		if (pos.getY() >= sphereChunk.closestSphere.seaLevel + BRIDGE_HEIGHT
+				|| Math.abs(pos.getX() - sphereChunk.closestSphere.centre.getX()) > BRIDGE_WIDTH
+						&& Math.abs(pos.getZ() - sphereChunk.closestSphere.centre.getZ()) > BRIDGE_WIDTH) {
 			return Blocks.GLASS.getDefaultState();
 		}
 		return Blocks.AIR.getDefaultState();
