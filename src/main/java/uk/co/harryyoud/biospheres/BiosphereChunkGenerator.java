@@ -38,31 +38,44 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 		SphereChunk sphereChunk = SphereChunk.get((World) world, chunkIn.getPos());
 
 		for (BlockPos pos : new BlockPosIterator(chunkIn)) {
-			BlockState blockState = getBlockStateFor(sphereChunk, pos);
+			BlockState blockState = getBlockStateAt(sphereChunk, pos);
 			chunkIn.setBlockState(pos, blockState, false);
 		}
 	}
 
-	private BlockState getBlockStateFor(SphereChunk sphereChunk, BlockPos pos) {
-		BlockState blockState = Blocks.AIR.getDefaultState();
+	private BlockState getBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
 		double sphereDistance = sphereChunk.getDistance(pos);
-		if (pos.getY() > sphereChunk.seaLevel) {
-			// Create the glass half of the sphere and the walkway cut outs
-			if (sphereDistance == sphereChunk.radius) {
-				if (pos.getY() >= sphereChunk.seaLevel + BRIDGE_HEIGHT
-						|| Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) > BRIDGE_WIDTH
-								&& Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) > BRIDGE_WIDTH) {
-					blockState = Blocks.GLASS.getDefaultState();
-				}
-			}
-		} else if (sphereDistance == sphereChunk.radius) {
-			blockState = Blocks.STONE.getDefaultState();
-		} else if (pos.getY() == sphereChunk.seaLevel && sphereDistance > sphereChunk.radius
-				&& (Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) < BRIDGE_WIDTH + 1
-						|| Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) < BRIDGE_WIDTH + 1)) {
-			blockState = Blocks.OAK_PLANKS.getDefaultState();
+		if (sphereDistance == sphereChunk.radius) {
+			return this.getShellBlockStateAt(sphereChunk, pos);
 		}
-		return blockState;
+		if (sphereDistance > sphereChunk.radius) {
+			return this.getOutsideBlockStateAt(sphereChunk, pos);
+		} else {
+			return Blocks.AIR.getDefaultState();
+		}
+	}
+
+	private BlockState getOutsideBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
+		if (pos.getY() == sphereChunk.seaLevel
+				&& (Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) < BRIDGE_WIDTH + 1
+						|| Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) < BRIDGE_WIDTH + 1))
+
+		{
+			return Blocks.OAK_PLANKS.getDefaultState();
+		}
+		return Blocks.AIR.getDefaultState();
+	}
+
+	private BlockState getShellBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
+		if (pos.getY() < sphereChunk.seaLevel) { // Below the vertical centre
+			return Blocks.STONE.getDefaultState();
+		}
+		if (pos.getY() >= sphereChunk.seaLevel + BRIDGE_HEIGHT
+				|| Math.abs(pos.getX() - sphereChunk.sphereCenter.getX()) > BRIDGE_WIDTH
+						&& Math.abs(pos.getZ() - sphereChunk.sphereCenter.getZ()) > BRIDGE_WIDTH) {
+			return Blocks.GLASS.getDefaultState();
+		}
+		return Blocks.AIR.getDefaultState();
 	}
 
 	// generateNoiseRegion
