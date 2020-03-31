@@ -8,7 +8,7 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
-import net.minecraft.world.gen.Heightmap.Type;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.WorldGenRegion;
 
 public class BiosphereChunkGenerator<C extends GenerationSettings> extends ChunkGenerator<C> {
@@ -79,7 +79,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 
 	// generateNoiseRegion
 	@Override
-	public int func_222529_a(int p_222529_1_, int p_222529_2_, Type heightmapType) {
+	public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type heightmapType) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
