@@ -26,20 +26,21 @@ public class BlockPosIterator implements Iterable<BlockPos>, Iterator<BlockPos> 
 
 	@Override
 	public BlockPos next() {
+		BlockPos ret = this.chunk.getPos().getBlock(this.currentX, this.currentY, this.currentZ);
 		if (this.currentZ < 15) {
 			this.currentZ += 1;
-			return this.chunk.getPos().getBlock(this.currentX, this.currentY, this.currentZ);
+			return ret;
 		}
 		if (this.currentY < 255) {
 			this.currentY += 1;
 			this.currentZ = 0;
-			return this.chunk.getPos().getBlock(this.currentX, this.currentY, this.currentZ);
+			return ret;
 		}
 		if (this.currentX < 15) {
 			this.currentX += 1;
 			this.currentY = 0;
 			this.currentZ = 0;
-			return this.chunk.getPos().getBlock(this.currentX, this.currentY, this.currentZ);
+			return ret;
 		}
 		return null;
 	}
