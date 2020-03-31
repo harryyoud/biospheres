@@ -73,7 +73,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 	}
 
 	private BlockState getOutsideBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {
-		if (pos.getY() == sphereChunk.closestSphere.seaLevel
+		if (pos.getY() == sphereChunk.closestSphere.seaLevel - 1
 				&& (Math.abs(pos.getX() - sphereChunk.closestSphere.centre.getX()) < BRIDGE_WIDTH + 1
 						|| Math.abs(pos.getZ() - sphereChunk.closestSphere.centre.getZ()) < BRIDGE_WIDTH + 1))
 
