@@ -22,14 +22,28 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 
 	// carve
 	@Override
-	public void func_225551_a_(WorldGenRegion p_225551_1_, IChunk p_225551_2_) {
-		// TODO Auto-generated method stub
+	public void func_225551_a_(WorldGenRegion region, IChunk chunkIn) {
+		SphereChunk sphereChunk = SphereChunk.get(region, chunkIn.getPos());
+		Sphere sphere = sphereChunk.closestSphere;
+
+		for (BlockPos pos : new BlockPosIterator(chunkIn)) {
+			if (pos.getY() == sphere.centre.getY() && sphere.getDistanceToCenter(pos) < sphere.radius) {
+				// Only run surface builder for each x, z once
+				sphere.biome.buildSurface(sphere.getRandom(), chunkIn, pos.getX(), pos.getZ(), this.getGroundHeight(),
+						sphere.getRandom().nextDouble() * 5, Blocks.STONE.getDefaultState(),
+						Blocks.WATER.getDefaultState(), this.getSeaLevel(), region.getSeed());
+			}
+		}
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return 63;
 	}
 
 	@Override
 	public int getGroundHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.world.getSeaLevel() + 1;
 	}
 
 	@Override
@@ -49,9 +63,13 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Chunk
 		}
 		if (sphereDistance > sphereChunk.closestSphere.radius) {
 			return this.getOutsideBlockStateAt(sphereChunk, pos);
-		} else {
-			return Blocks.AIR.getDefaultState();
 		}
+		if (sphereDistance < sphereChunk.closestSphere.radius) {
+			if (pos.getY() < sphereChunk.closestSphere.seaLevel) {
+				return Blocks.STONE.getDefaultState();
+			}
+		}
+		return Blocks.AIR.getDefaultState();
 	}
 
 	private BlockState getOutsideBlockStateAt(SphereChunk sphereChunk, BlockPos pos) {

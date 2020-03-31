@@ -66,4 +66,8 @@ public class Sphere {
 		return (int) Math.floor(Math.sqrt(sq));
 	}
 
+	public Random getRandom() {
+		return this.rnd;
+	}
+
 }
