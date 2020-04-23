@@ -58,7 +58,6 @@ public class Sphere {
 
 	private Biome getRandomBiome(Random rnd) {
 		Biome biome = BiosphereBiomeProvider.biomesArray[(rnd.nextInt(BiosphereBiomeProvider.biomesArray.length))];
-//		System.out.println("Sphere(" + this.centre.toString() + ") = " + biome.toString());
 		return biome;
 	}
 

@@ -17,6 +17,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
@@ -83,7 +84,9 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 			double sphereDistance = sphere.getDistanceToCenter(pos);
 			if (pos.getY() == sphere.getCentre().getY() && sphereDistance <= sphere.radius) {
 				// Only run surface builder for each x, z once (one y value)
-				sphere.getBiome().buildSurface(sphere.getRandom(), chunkIn, pos.getX(), pos.getZ(),
+				// Biome biome = sphere.getBiome();
+				Biome biome = region.getBiome(pos);
+				biome.buildSurface(sphere.getRandom(), chunkIn, pos.getX(), pos.getZ(),
 						chunkIn.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ()),
 						this.getSurfaceDepthNoise(pos), INSIDE_FILLER_BLOCK, LAKE_FLUID_BLOCK, this.getSeaLevel(),
 						region.getSeed());
