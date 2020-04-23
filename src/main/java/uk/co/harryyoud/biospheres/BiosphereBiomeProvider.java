@@ -48,6 +48,6 @@ public class BiosphereBiomeProvider extends BiomeProvider {
 		ChunkPos chunkPos = new ChunkPos(pos);
 		SphereChunk sphereChunk = SphereChunk.get(this.world, chunkPos);
 		Sphere sphere = sphereChunk.closestSphere;
-		return sphere.biome;
+		return sphere.getBiome();
 	}
 }
