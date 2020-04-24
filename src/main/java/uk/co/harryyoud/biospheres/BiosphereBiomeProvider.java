@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.provider.BiomeProvider;
@@ -34,9 +33,7 @@ public class BiosphereBiomeProvider extends BiomeProvider {
 		x = (x << 2);
 		z = (z << 2);
 		BlockPos pos = new BlockPos(x, y, z);
-		ChunkPos chunkPos = new ChunkPos(pos);
-		SphereChunk sphereChunk = SphereChunk.get(this.world, chunkPos);
-		Sphere sphere = sphereChunk.closestSphere;
+		Sphere sphere = Sphere.getClosest(this.world, pos);
 		return sphere.getBiome();
 	}
 }

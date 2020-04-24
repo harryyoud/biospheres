@@ -77,14 +77,12 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 	@Override
 	// build surface;
 	public void func_225551_a_(WorldGenRegion region, IChunk chunkIn) {
-		SphereChunk sphereChunk = SphereChunk.get(region, chunkIn.getPos());
-		Sphere sphere = sphereChunk.closestSphere;
+		Sphere sphere = Sphere.getClosest(region, chunkIn.getPos().asBlockPos());
 
 		for (BlockPos pos : new BlockPosIterator(chunkIn.getPos())) {
 			double sphereDistance = sphere.getDistanceToCenter(pos);
 			if (pos.getY() == sphere.getCentre().getY() && sphereDistance <= sphere.radius) {
 				// Only run surface builder for each x, z once (one y value)
-				// Biome biome = sphere.getBiome();
 				Biome biome = region.getBiome(pos);
 				biome.buildSurface(sphere.getRandom(), chunkIn, pos.getX(), pos.getZ(),
 						chunkIn.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ()),
@@ -99,8 +97,8 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 		super.decorate(region);
 
 		IChunk chunkIn = region.getChunk(region.getMainChunkX(), region.getMainChunkZ());
+		Sphere sphere = Sphere.getClosest(region, chunkIn.getPos().asBlockPos());
 		for (BlockPos pos : new BlockPosIterator(chunkIn.getPos())) {
-			Sphere sphere = SphereChunk.get(region, chunkIn.getPos()).closestSphere;
 			double sphereDistance = sphere.getDistanceToCenter(pos);
 			BlockState prevState = region.getBlockState(pos);
 			BlockState state = null;
@@ -142,15 +140,14 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 	@Override
 	public void makeBase(IWorld worldIn, IChunk chunkIn) {
 		double[][][] noises = this.getNoiseForChunk(worldIn, chunkIn.getPos());
-		SphereChunk sphereChunk = SphereChunk.get(worldIn, chunkIn.getPos());
+		Sphere sphere = Sphere.getClosest(worldIn, chunkIn.getPos().asBlockPos());
 
 		for (BlockPos pos : new BlockPosIterator(chunkIn.getPos())) {
 			BlockState state = this.getBlock(worldIn, chunkIn, pos,
 					noises[Math.abs(pos.getX()) % 16][pos.getY()][Math.abs(pos.getZ()) % 16]);
 			chunkIn.setBlockState(pos, state, false);
 
-			Sphere sphere = sphereChunk.closestSphere;
-			double sphereDistance = sphereChunk.closestSphere.getDistanceToCenter(pos);
+			double sphereDistance = sphere.getDistanceToCenter(pos);
 			if (sphereDistance >= sphere.radius) {
 				Direction dir = null;
 
@@ -178,8 +175,8 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 
 				Direction.Axis axis = dir.getAxis();
 				Direction.Axis otherAxis = dir.rotateY().getAxis();
-				Sphere nextClosestSphere = Sphere.get(worldIn,
-						Utils.moveChunk(sphere.getCentreChunk(), dir, Sphere.gridSize));
+				Sphere nextClosestSphere = Sphere.getClosest(worldIn,
+						Utils.moveChunk(sphere.getCentreChunk(), dir, Sphere.gridSize).asBlockPos());
 				BlockPos aimFor = nextClosestSphere.computeBridgeJoin(this, dir.getOpposite());
 				BlockPos aimFrom = sphere.computeBridgeJoin(this, dir);
 
@@ -291,17 +288,17 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 	}
 
 	private BlockState getBlock(IWorld worldIn, IChunk chunkIn, BlockPos pos, double finalNoiseClamped) {
-		SphereChunk sphereChunk = SphereChunk.get(worldIn, chunkIn.getPos());
-		double sphereDistance = sphereChunk.closestSphere.getDistanceToCenter(pos);
+		Sphere sphere = Sphere.getClosest(worldIn, chunkIn.getPos().asBlockPos());
+		double sphereDistance = sphere.getDistanceToCenter(pos);
 		if (finalNoiseClamped > 0.0D) {
-			if (sphereDistance <= sphereChunk.closestSphere.radius) {
+			if (sphereDistance <= sphere.radius) {
 				return INSIDE_FILLER_BLOCK;
 			}
 		}
-		if (pos.getY() < this.getSeaLevel() && sphereDistance < sphereChunk.closestSphere.radius) {
+		if (pos.getY() < this.getSeaLevel() && sphereDistance < sphere.radius) {
 			return LAKE_FLUID_BLOCK;
 		}
-		if (sphereDistance > sphereChunk.closestSphere.radius) {
+		if (sphereDistance > sphere.radius) {
 			return OUTSIDE_FILLER_BLOCK;
 		}
 		return AIR;
@@ -318,8 +315,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 	public void func_225550_a_(BiomeManager biomeManager, IChunk chunkIn, GenerationStage.Carving genStage) {
 		// I can't influence where caves are going to be on a block by block basis, so
 		// just ignore block changes that fall outside of the spheres
-		SphereChunk sphereChunk = SphereChunk.get(this.world, chunkIn.getPos());
-		Sphere sphere = sphereChunk.closestSphere;
+		Sphere sphere = Sphere.getClosest(this.world, chunkIn.getPos().asBlockPos());
 		IChunk newChunk = new CustomChunkPrimer(chunkIn, (pos) -> sphere.getDistanceToCenter(pos) > sphere.radius);
 		super.func_225550_a_(biomeManager, newChunk, genStage);
 	}

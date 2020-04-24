@@ -42,7 +42,7 @@ public class Sphere {
 		this.biome = this.getRandomBiome(this.rnd);
 	}
 
-	public static Sphere get(IWorld worldIn, BlockPos centrePos) {
+	public static Sphere fromCentre(IWorld worldIn, BlockPos centrePos) {
 		if (sphereCache.containsKey(centrePos)) {
 			return sphereCache.get(centrePos);
 		}
@@ -51,9 +51,16 @@ public class Sphere {
 		return sphere;
 	}
 
-	public static Sphere get(IWorld worldIn, ChunkPos chunkPos) {
+	public static Sphere fromCentreChunk(IWorld worldIn, ChunkPos chunkPos) {
 		BlockPos pos = chunkPos.getBlock(8, Sphere.midY, 8);
-		return Sphere.get(worldIn, pos);
+		return Sphere.fromCentre(worldIn, pos);
+	}
+
+	public static Sphere getClosest(IWorld worldIn, BlockPos pos) {
+		ChunkPos chunkPos = new ChunkPos(pos);
+		int chunkOffsetX = (int) Math.floor(Math.IEEEremainder(chunkPos.x, Sphere.gridSize));
+		int chunkOffsetZ = (int) Math.floor(Math.IEEEremainder(chunkPos.z, Sphere.gridSize));
+		return Sphere.fromCentreChunk(worldIn, new ChunkPos(chunkPos.x + chunkOffsetX, chunkPos.z + chunkOffsetZ));
 	}
 
 	private Biome getRandomBiome(Random rnd) {
@@ -84,7 +91,7 @@ public class Sphere {
 		return this.biome;
 	}
 
-	public BlockPos computeBridgeJoin(BiosphereChunkGenerator<?> chunkGen, Direction dir) {
+	public BlockPos computeBridgeJoin(BiosphereChunkGenerator chunkGen, Direction dir) {
 		BlockPos fromCache = this.bridgeJoin.get(dir);
 		if (fromCache != null) {
 			return fromCache;
