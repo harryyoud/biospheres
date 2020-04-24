@@ -1,5 +1,7 @@
 ## World generation process
 
+The important thing to realise about this is that everything is done threaded, so you cannot rely on other chunks being at any stage in the process, which is why the bridge joins are calculated from noise values and not topBlockY.
+
 ### 1. makeBase
 In the normal generator, this create a base of stone with varying heights using the OctavesNoiseGenerator. We use it to create stone hemispheres, connected by bridges with fence blocks. Then water is added for any blocks below the sea level.
 
