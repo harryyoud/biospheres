@@ -65,6 +65,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 			OverworldGenSettings generationSettingsIn) {
 		super(worldIn, biomeProviderIn, generationSettingsIn);
 		try {
+			@SuppressWarnings("rawtypes")
 			Class clz = NoiseChunkGenerator.class;
 			Field f = clz.getDeclaredField("surfaceDepthNoise");
 			f.setAccessible(true);

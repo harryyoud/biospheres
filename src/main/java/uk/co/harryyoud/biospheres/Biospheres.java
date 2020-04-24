@@ -27,6 +27,7 @@ public class Biospheres {
 		System.out.println(String.format("Injecting biosphere world type into server.properties. Original value: %s",
 				serverProperties.worldType.getName()));
 		try {
+			@SuppressWarnings("rawtypes")
 			Class clz = ServerProperties.class;
 			Field f = clz.getDeclaredField("worldType");
 			f.setAccessible(true);

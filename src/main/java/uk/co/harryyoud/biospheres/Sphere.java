@@ -91,7 +91,7 @@ public class Sphere {
 		return this.biome;
 	}
 
-	public BlockPos computeBridgeJoin(BiosphereChunkGenerator chunkGen, Direction dir) {
+	public BlockPos computeBridgeJoin(BiosphereChunkGenerator<?> chunkGen, Direction dir) {
 		BlockPos fromCache = this.bridgeJoin.get(dir);
 		if (fromCache != null) {
 			return fromCache;
@@ -104,7 +104,7 @@ public class Sphere {
 			join.move(dir.getOpposite(), 1);
 			ChunkPos joinChunk = new ChunkPos(join);
 			double[][][] noisesFrom = chunkGen.getNoiseForChunk(this.world, joinChunk);
-			domeHeight = this.midY + (int) Math.round(Math.sqrt(Math.abs(Math.pow(this.radius, 2) - Math
+			domeHeight = Sphere.midY + (int) Math.round(Math.sqrt(Math.abs(Math.pow(this.radius, 2) - Math
 					.pow(Utils.getCoord(this.getCentre(), dir.getAxis()) - Utils.getCoord(join, dir.getAxis()), 2))));
 			join.setY(Utils.topBlockFromNoise(noisesFrom, Math.abs(join.getX()) % 16, Math.abs(join.getZ()) % 16,
 					domeHeight, chunkGen.getSeaLevel()));
@@ -116,10 +116,10 @@ public class Sphere {
 		join.move(dir, 1);
 		ChunkPos joinChunk = new ChunkPos(join);
 		double[][][] noisesFrom = chunkGen.getNoiseForChunk(this.world, joinChunk);
-		domeHeight = this.midY + (int) Math.round(Math.sqrt(Math.abs(Math.pow(this.radius, 2)
+		domeHeight = Sphere.midY + (int) Math.round(Math.sqrt(Math.abs(Math.pow(this.radius, 2)
 				- Math.pow(Utils.getCoord(this.getCentre(), dir.getAxis()) - Utils.getCoord(join, dir.getAxis()), 2))));
-		if (domeHeight < this.midY + 3) {
-			domeHeight = this.midY + 10;
+		if (domeHeight < Sphere.midY + 3) {
+			domeHeight = Sphere.midY + 10;
 		}
 		join.setY(Utils.topBlockFromNoise(noisesFrom, Math.abs(join.getX()) % 16, Math.abs(join.getZ()) % 16,
 				domeHeight, chunkGen.getSeaLevel()));
