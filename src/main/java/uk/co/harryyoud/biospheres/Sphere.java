@@ -19,7 +19,7 @@ public class Sphere {
 	private final ChunkPos centreChunk;
 	private final Random rnd;
 	private final Biome biome;
-	public static final int gridSize = 15;
+	public static final int gridSize = 16;
 	public final int radius = 60;
 	public static final int midY = 63;
 	private HashMap<Direction, BlockPos> bridgeJoin = new HashMap<Direction, BlockPos>();
