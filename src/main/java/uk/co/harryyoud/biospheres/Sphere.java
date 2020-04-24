@@ -60,7 +60,7 @@ public class Sphere {
 		ChunkPos chunkPos = new ChunkPos(pos);
 		int chunkOffsetX = (int) Math.floor(Math.IEEEremainder(chunkPos.x, Sphere.gridSize));
 		int chunkOffsetZ = (int) Math.floor(Math.IEEEremainder(chunkPos.z, Sphere.gridSize));
-		return Sphere.fromCentreChunk(worldIn, new ChunkPos(chunkPos.x + chunkOffsetX, chunkPos.z + chunkOffsetZ));
+		return Sphere.fromCentreChunk(worldIn, new ChunkPos(chunkPos.x - chunkOffsetX, chunkPos.z - chunkOffsetZ));
 	}
 
 	private Biome getRandomBiome(Random rnd) {
