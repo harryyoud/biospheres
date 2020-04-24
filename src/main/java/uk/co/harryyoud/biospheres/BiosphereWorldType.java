@@ -2,7 +2,6 @@ package uk.co.harryyoud.biospheres;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.provider.OverworldBiomeProvider;
 import net.minecraft.world.biome.provider.OverworldBiomeProviderSettings;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.OverworldGenSettings;
