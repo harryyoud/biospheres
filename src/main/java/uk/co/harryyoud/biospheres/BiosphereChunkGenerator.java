@@ -123,7 +123,10 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 				}
 			}
 			if (sphereDistance > sphere.radius) {
-				if (!ALLOWED_BLOCKS.contains(prevState.getBlock()) && !region.isAirBlock(pos)) {
+				// Don't remove blocks that have light values > 0, since the light engine gets
+				// annoyed
+				if (!ALLOWED_BLOCKS.contains(prevState.getBlock()) && !region.isAirBlock(pos)
+						&& prevState.getLightValue(region, pos) == 0) {
 					state = AIR; // Clean up anything outside the spheres that isn't meant to be there
 				}
 			}
