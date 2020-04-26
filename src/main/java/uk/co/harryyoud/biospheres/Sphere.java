@@ -72,10 +72,7 @@ public class Sphere {
 	}
 
 	public int getDistanceToCenter(BlockPos pos) {
-		double sq = Math.pow((pos.getX() - this.getCentre().getX()), 2.0D)
-				+ Math.pow((pos.getY() - this.getCentre().getY()), 2.0D)
-				+ Math.pow((pos.getZ() - this.getCentre().getZ()), 2.0D);
-		return (int) Math.floor(Math.sqrt(sq));
+		return (int) Math.floor(Math.sqrt(this.getCentre().distanceSq(pos.getX(), pos.getY(), pos.getZ(), false)));
 	}
 
 	public Random getRandom() {
