@@ -19,9 +19,11 @@ public class Sphere {
 	private final ChunkPos centreChunk;
 	private final Random rnd;
 	private final Biome biome;
-	public static final int gridSize = 16;
-	public final int radius = 60;
-	public static final int midY = 63;
+	private final int minRadius = 40;
+	private final int maxRadius = 100;
+	public final int radius;
+	public static final int gridSize = 15;
+	public static final int midY = 100;
 	private HashMap<Direction, BlockPos> bridgeJoin = new HashMap<Direction, BlockPos>();
 	private ArrayList<MutableBoundingBox> domeCutouts = new ArrayList<MutableBoundingBox>();
 
@@ -40,6 +42,7 @@ public class Sphere {
 		this.centreChunk = new ChunkPos(centrePos);
 		this.rnd = new Random(centrePos.hashCode() * world.getSeed());
 		this.biome = this.getRandomBiome(this.rnd);
+		this.radius = this.rnd.nextInt((maxRadius - minRadius) + 1) + minRadius;
 	}
 
 	public static Sphere fromCentre(IWorld worldIn, BlockPos centrePos) {
@@ -104,10 +107,12 @@ public class Sphere {
 			join.move(dir.getOpposite(), 1);
 			ChunkPos joinChunk = new ChunkPos(join);
 			double[][][] noisesFrom = chunkGen.getNoiseForChunk(this.world, joinChunk);
+			// height of dome is pythag, where radius is hyp, and dome height and horizontal
+			// distance from centre are sides
 			domeHeight = Sphere.midY + (int) Math.round(Math.sqrt(Math.abs(Math.pow(this.radius, 2) - Math
 					.pow(Utils.getCoord(this.getCentre(), dir.getAxis()) - Utils.getCoord(join, dir.getAxis()), 2))));
 			join.setY(Utils.topBlockFromNoise(noisesFrom, Math.abs(join.getX()) % 16, Math.abs(join.getZ()) % 16,
-					domeHeight, chunkGen.getSeaLevel()));
+					domeHeight, chunkGen.getSeaLevel(), (i) -> chunkGen.correctYValue(i)));
 			if (Utils.getCoord(this.getCentre(), dir.getAxis()) == Utils.getCoord(join, dir.getAxis())) {
 				break;
 			}
@@ -122,7 +127,7 @@ public class Sphere {
 			domeHeight = Sphere.midY + 10;
 		}
 		join.setY(Utils.topBlockFromNoise(noisesFrom, Math.abs(join.getX()) % 16, Math.abs(join.getZ()) % 16,
-				domeHeight, chunkGen.getSeaLevel()));
+				domeHeight, chunkGen.getSeaLevel(), (i) -> chunkGen.correctYValue(i)));
 
 		BlockPos joinIm = join.toImmutable();
 		this.bridgeJoin.put(dir, joinIm);

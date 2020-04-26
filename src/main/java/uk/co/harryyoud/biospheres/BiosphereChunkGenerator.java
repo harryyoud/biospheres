@@ -171,17 +171,27 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void makeBase(IWorld worldIn, IChunk chunkIn) {
 		double[][][] noises = this.getNoiseForChunk(worldIn, chunkIn.getPos());
 		Sphere sphere = Sphere.getClosest(worldIn, chunkIn.getPos().asBlockPos());
 
 		for (BlockPos pos : new BlockPosIterator(chunkIn.getPos())) {
-			BlockState state = this.getBlock(worldIn, chunkIn, pos,
-					noises[Math.abs(pos.getX()) % 16][pos.getY()][Math.abs(pos.getZ()) % 16]);
-			chunkIn.setBlockState(pos, state, false);
+			BlockState state = null;
+			int sphereDistance = sphere.getDistanceToCenter(pos);
+			if (pos.getY() < this.getSeaLevel() && sphereDistance < sphere.radius) {
+				state = LAKE_FLUID_BLOCK;
+			}
+			if (noises[Math.abs(pos.getX()) % 16][this.correctYValue(pos.getY())][Math.abs(pos.getZ()) % 16] > 0.0D) {
+				if (sphereDistance <= sphere.radius) {
+					state = INSIDE_FILLER_BLOCK;
+				}
+			}
+			if (state != null && !state.isAir()) {
+				chunkIn.setBlockState(pos, state, false);
+			}
 
-			double sphereDistance = sphere.getDistanceToCenter(pos);
 			if (sphereDistance >= sphere.radius) {
 				Direction dir = null;
 
@@ -321,27 +331,30 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 		return finalNoises;
 	}
 
-	private BlockState getBlock(IWorld worldIn, IChunk chunkIn, BlockPos pos, double finalNoiseClamped) {
-		Sphere sphere = Sphere.getClosest(worldIn, chunkIn.getPos().asBlockPos());
-		double sphereDistance = sphere.getDistanceToCenter(pos);
-		if (finalNoiseClamped > 0.0D) {
-			if (sphereDistance <= sphere.radius) {
-				return INSIDE_FILLER_BLOCK;
-			}
-		}
-		if (pos.getY() < this.getSeaLevel() && sphereDistance < sphere.radius) {
-			return LAKE_FLUID_BLOCK;
-		}
-		if (sphereDistance > sphere.radius) {
-			return OUTSIDE_FILLER_BLOCK;
-		}
-		return AIR;
-	}
-
 	public double getSurfaceDepthNoise(BlockPos pos) {
 		double scale = 0.0625D;
 		return this.surfaceDepthNoise2.noiseAt(pos.getX() * scale, pos.getZ() * scale, scale, pos.getY() * scale)
 				* 15.0D;
+	}
+
+	@Override
+	public int getGroundHeight() {
+		return this.getSeaLevel() + 1;
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return 100;
+	}
+
+	public int correctYValue(int yIn) {
+		// The overworld noise generator uses loads of magic numbers, which assume the
+		// sea level is 63, so if we want to raise the sea level, then we need to use
+		// the noise values from a different height in order to raise the ground level
+		// up from the sea
+		int seaLevelDiff = this.getSeaLevel() - 63;
+		int newY = yIn - seaLevelDiff;
+		return Math.max(0, newY);
 	}
 
 	@Override
