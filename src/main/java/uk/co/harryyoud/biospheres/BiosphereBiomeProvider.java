@@ -1,6 +1,8 @@
 package uk.co.harryyoud.biospheres;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.util.math.BlockPos;
@@ -13,11 +15,16 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class BiosphereBiomeProvider extends BiomeProvider {
 
 	public final IWorld world;
+	public static final List<Biome.Category> bannedCategories = Arrays.asList(Biome.Category.THEEND,
+			Biome.Category.NETHER);
+	public static final List<Biome> bannedBiomes = Arrays.asList();
 	public static final Set<Biome> biomes;
 	public static final Biome[] biomesArray;
 
 	static {
 		biomes = new HashSet<Biome>(ForgeRegistries.BIOMES.getValues());
+		biomes.removeIf((biome) -> bannedCategories.contains(biome.getCategory()));
+		biomes.removeIf((biome) -> bannedBiomes.contains(biome));
 		biomesArray = biomes.toArray(new Biome[biomes.size()]);
 	}
 
