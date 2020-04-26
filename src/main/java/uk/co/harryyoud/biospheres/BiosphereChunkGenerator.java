@@ -10,8 +10,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BushBlock;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +32,9 @@ import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.OverworldChunkGenerator;
 import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraftforge.registries.ForgeRegistries;
+import uk.co.harryyoud.biospheres.wrappers.IChunkWrapper;
+import uk.co.harryyoud.biospheres.wrappers.IWorldWrapper;
 
 public class BiosphereChunkGenerator<C extends GenerationSettings> extends OverworldChunkGenerator {
 	private final BlockState DOME_BLOCK = Blocks.WHITE_STAINED_GLASS.getDefaultState();
@@ -64,6 +70,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 	public BiosphereChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn,
 			OverworldGenSettings generationSettingsIn) {
 		super(worldIn, biomeProviderIn, generationSettingsIn);
+
 		try {
 			@SuppressWarnings("rawtypes")
 			Class clz = NoiseChunkGenerator.class;
@@ -95,7 +102,30 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 
 	@Override
 	public void decorate(WorldGenRegion region) {
-		super.decorate(region);
+		IWorld worldWrapper = new IWorldWrapper(region, this.getSeaLevel());
+
+		// COPY PASTED FROM PARENT, with region replaced with worldWrapper
+		int i = region.getMainChunkX();
+		int j = region.getMainChunkZ();
+		int k = i * 16;
+		int l = j * 16;
+		BlockPos blockpos = new BlockPos(k, 0, l);
+		Biome biome = this.getBiome(region.getBiomeManager(), blockpos.add(8, 8, 8));
+		SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
+		long i1 = sharedseedrandom.setDecorationSeed(region.getSeed(), k, l);
+
+		for (GenerationStage.Decoration generationstage$decoration : GenerationStage.Decoration.values()) {
+			try {
+				biome.decorate(generationstage$decoration, this, worldWrapper, i1, sharedseedrandom, blockpos);
+			} catch (Exception exception) {
+				CrashReport crashreport = CrashReport.makeCrashReport(exception, "Biome decoration");
+				crashreport.makeCategory("Generation").addDetail("CenterX", i).addDetail("CenterZ", j)
+						.addDetail("Step", generationstage$decoration).addDetail("Seed", i1)
+						.addDetail("Biome", ForgeRegistries.BIOMES.getKey(biome));
+				throw new ReportedException(crashreport);
+			}
+		}
+		// END COPY-PASTE
 
 		IChunk chunkIn = region.getChunk(region.getMainChunkX(), region.getMainChunkZ());
 		Sphere sphere = Sphere.getClosest(region, chunkIn.getPos().asBlockPos());
@@ -104,14 +134,14 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 			BlockState prevState = region.getBlockState(pos);
 			BlockState state = null;
 
-			for (int j = 0; j < 4; j++) {
-				sphere.computeBridgeJoin(this, Direction.byHorizontalIndex(j));
+			for (int d = 0; d < 4; d++) {
+				sphere.computeBridgeJoin(this, Direction.byHorizontalIndex(d));
 			}
 
 			if (sphereDistance == sphere.radius) {
 				if (BANNED_BLOCKS.contains(prevState.getBlock()) || prevState.isAir(region, pos)
 						|| prevState.isFoliage(region, pos) || prevState.getBlock() instanceof BushBlock
-						|| prevState.getBlock().isIn(BlockTags.LEAVES)
+						|| prevState.getBlock().isIn(BlockTags.LEAVES) || !prevState.isSolid()
 						|| (chunkIn.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ()) == pos.getY()
 								- 1) && !ALLOWED_BLOCKS.contains(region.getBlockState(pos).getBlock())) {
 					state = DOME_BLOCK;
@@ -320,7 +350,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 		// I can't influence where caves are going to be on a block by block basis, so
 		// just ignore block changes that fall outside of the spheres
 		Sphere sphere = Sphere.getClosest(this.world, chunkIn.getPos().asBlockPos());
-		IChunk newChunk = new CustomChunkPrimer(chunkIn, (pos) -> sphere.getDistanceToCenter(pos) > sphere.radius);
+		IChunk newChunk = new IChunkWrapper(chunkIn, (pos) -> sphere.getDistanceToCenter(pos) > sphere.radius);
 		super.func_225550_a_(biomeManager, newChunk, genStage);
 	}
 }

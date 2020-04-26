@@ -1,4 +1,4 @@
-package uk.co.harryyoud.biospheres;
+package uk.co.harryyoud.biospheres.wrappers;
 
 import java.util.BitSet;
 import java.util.Collection;
@@ -36,13 +36,13 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.Heightmap.Type;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 
-public class CustomChunkPrimer implements IChunk {
+public class IChunkWrapper implements IChunk {
 
 	private IChunk chunk;
 
 	private Predicate<BlockPos> filter;
 
-	public CustomChunkPrimer(IChunk chunkIn, Predicate<BlockPos> filter) {
+	public IChunkWrapper(IChunk chunkIn, Predicate<BlockPos> filter) {
 		this.chunk = chunkIn;
 		this.filter = filter;
 	}
@@ -61,8 +61,8 @@ public class CustomChunkPrimer implements IChunk {
 
 	@Override
 	public boolean equals(Object objIn) {
-		if (objIn instanceof CustomChunkPrimer) {
-			return this.chunk == ((CustomChunkPrimer) objIn).getInnerIChunk();
+		if (objIn instanceof IChunkWrapper) {
+			return this.chunk == ((IChunkWrapper) objIn).getInnerIChunk();
 		}
 		return false;
 	}
