@@ -1,0 +1,10 @@
+{
+	"homepage": "https://github.com/harryyoud/biospheres",
+	"1.15.2": {
+		"1.0.0": "Initial release"
+	},
+	"promos": {
+		"1.15.2-latest": "1.0.0",
+		"1.15.2-recommended": "1.0.0"
+	}
+}

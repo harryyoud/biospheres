@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[31,)"
-#issueTrackerURL="http://my.issue.tracker/"
+issueTrackerURL="https://github.com/harryyoud/biospheres/issues"
 
 [[mods]]
 	modId="biospheres"
@@ -10,14 +10,12 @@ loaderVersion="[31,)"
 	authors="Harry Youd (harryyoud)"
 	displayURL="https://github.com/harryyoud/biospheres"
 	description='Biospheres mod for Minecraft, adding a new world type with large spheres, each containing a different biome.'
-
-	# A URL to query for updates for this mod. See the JSON update specification <here>
-	#updateJSONURL="http://myurl.me/" #optional
+	updateJSONURL="https://raw.githubusercontent.com/harryyoud/biospheres/master/updates.json"
 
 	# A file name (in the root of the mod JAR) containing a logo for display
 	#logoFile="examplemod.png" #optional
 
-	[[dependencies.biospheres]] #optional
+	[[dependencies.biospheres]]
 	    modId="forge"
 	    mandatory=true
 	    versionRange="[31,)"

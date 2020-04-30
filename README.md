@@ -1,3 +1,6 @@
+# Biospheres Mod for Minecraft
+World generation mod that generates spheres, each containing a different biome, connected by bridges.
+
 ## World generation process
 
 The important thing to realise about this is that everything is done threaded, so you cannot rely on other chunks being at any stage in the process, which is why the bridge joins are calculated from noise values and not topBlockY.
