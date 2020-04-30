@@ -8,12 +8,14 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
+
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.15.2-0.1.0'
+version = '0.1.0'
 group = 'uk.co.harryyoud.biospheres' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'biospheres'
 
@@ -43,7 +45,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                biospheres {
                     source sourceSets.main
                 }
             }
@@ -59,7 +61,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                biospheres {
                     source sourceSets.main
                 }
             }
@@ -74,10 +76,10 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'biospheres', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                examplemod {
+                biospheres {
                     source sourceSets.main
                 }
             }

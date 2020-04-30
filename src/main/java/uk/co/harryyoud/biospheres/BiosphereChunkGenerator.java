@@ -1,6 +1,5 @@
 package uk.co.harryyoud.biospheres;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -30,6 +29,9 @@ import net.minecraft.world.gen.INoiseGenerator;
 import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.OverworldChunkGenerator;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessFieldException;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.registries.ForgeRegistries;
 import uk.co.harryyoud.biospheres.config.BiosphereGenSettingsSerializer.BiosphereGenSettings;
 import uk.co.harryyoud.biospheres.wrappers.IChunkWrapper;
@@ -82,12 +84,9 @@ public class BiosphereChunkGenerator extends OverworldChunkGenerator {
 		Sphere.midY = this.genSettings.sphereMidY;
 
 		try {
-			@SuppressWarnings("rawtypes")
-			Class clz = NoiseChunkGenerator.class;
-			Field f = clz.getDeclaredField("surfaceDepthNoise");
-			f.setAccessible(true);
-			this.surfaceDepthNoise2 = (INoiseGenerator) f.get(this);
-		} catch (Exception e) {
+			this.surfaceDepthNoise2 = (INoiseGenerator) ObfuscationReflectionHelper
+					.getPrivateValue(NoiseChunkGenerator.class, this, "field_222571_r");
+		} catch (UnableToAccessFieldException | UnableToFindFieldException e) {
 			throw new Error();
 		}
 	}

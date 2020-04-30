@@ -1,6 +1,5 @@
 package uk.co.harryyoud.biospheres;
 
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -16,6 +15,9 @@ import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.server.dedicated.ServerProperties;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessFieldException;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import uk.co.harryyoud.biospheres.config.BiosphereConfig;
@@ -48,8 +50,8 @@ public class Biospheres {
 
 		System.out.println(String
 				.format("Biospheres injection is enabled, injecting biospheres level-type and generator-settings"));
-		System.out.println(String.format("Original level-type = %s", props.worldType.getName()));
-		System.out.println(String.format("Original generator-settings = %s", props.generatorSettings));
+		System.out.println(String.format("Original level-type=\"%s\"", props.worldType.getName()));
+		System.out.println(String.format("Original generator-settings=\"%s\"", props.generatorSettings));
 
 		String newGenSettings = Dynamic
 				.convert(NBTDynamicOps.INSTANCE, JsonOps.INSTANCE,
@@ -58,20 +60,15 @@ public class Biospheres {
 
 		// First, we'll override the server.properties in memory
 		try {
-			Class<ServerProperties> clz = ServerProperties.class;
+			ObfuscationReflectionHelper.setPrivateValue(ServerProperties.class, props, worldType, "field_219023_q");
 
-			Field worldTypeField = clz.getDeclaredField("worldType");
-			worldTypeField.setAccessible(true);
-			worldTypeField.set(props, worldType);
-
-			// Only replace generator settings if empty
 			if (props.generatorSettings.isEmpty()) {
-				Field genSettingsField = clz.getDeclaredField("generatorSettings");
-				genSettingsField.setAccessible(true);
-				genSettingsField.set(props, newGenSettings);
+				ObfuscationReflectionHelper.setPrivateValue(ServerProperties.class, props, newGenSettings,
+						"field_219024_r");
 			}
-		} catch (Exception e) {
-			throw new Error("ABORT, worldType not modifiable");
+		} catch (UnableToFindFieldException | UnableToAccessFieldException e) {
+			throw new Error("Reflection failed when trying to edit the level-type and generator-settings properties",
+					e);
 		}
 
 		// Then, we replace them and right them to disk
