@@ -1,0 +1,14 @@
+{
+	"biospheres.generatorname": "Biospheres",
+	"biospheres.gui.title": "Biospheres world customization",
+	"biospheres.gui.default.label": "%s Invalid",
+	"biospheres.gui.block.invalid": "%s Block is invalid",
+	"biospheres.gui.int.invalid": "%s Not a whole number",
+	"biospheres.gui.intRange.invalid": "%s Must be between %d and %d",
+	"biospheres.gui.domeBlock.label": "Dome Block",
+	"biospheres.gui.bridgeBlock.label": "Bridge Block",
+	"biospheres.gui.outsideFillerBlock.label": "Outside Filler Block",
+	"biospheres.gui.sphereMidY.label": "Y midpoint of spheres",
+	"biospheres.gui.sphereMinRadius.label": "Sphere minimum radius",
+	"biospheres.gui.sphereMaxRadius.label": "Sphere maximum radius"
+}

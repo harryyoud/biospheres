@@ -24,33 +24,31 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.INoiseGenerator;
 import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.OverworldChunkGenerator;
-import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
 import net.minecraftforge.registries.ForgeRegistries;
+import uk.co.harryyoud.biospheres.config.BiosphereGenSettingsSerializer.BiosphereGenSettings;
 import uk.co.harryyoud.biospheres.wrappers.IChunkWrapper;
 import uk.co.harryyoud.biospheres.wrappers.IWorldWrapper;
 
-public class BiosphereChunkGenerator<C extends GenerationSettings> extends OverworldChunkGenerator {
-	private final BlockState DOME_BLOCK = Blocks.WHITE_STAINED_GLASS.getDefaultState();
+public class BiosphereChunkGenerator extends OverworldChunkGenerator {
+	private final BlockState DOME_BLOCK;
 	private final BlockState AIR = Blocks.AIR.getDefaultState();
-	private final BlockState OUTSIDE_FILLER_BLOCK = Blocks.AIR.getDefaultState();
-	private final BlockState INSIDE_FILLER_BLOCK = Blocks.STONE.getDefaultState();
-	private final BlockState BRIDGE_BLOCK = Blocks.OAK_PLANKS.getDefaultState();
+	private final BlockState OUTSIDE_FILLER_BLOCK;
+	private final BlockState BRIDGE_BLOCK;
 	private final BlockState FENCE_BLOCK = Blocks.OAK_FENCE.getDefaultState();
-	private final BlockState LAKE_FLUID_BLOCK = Blocks.WATER.getDefaultState();
 	private static final ArrayList<Block> BANNED_BLOCKS = new ArrayList<Block>(
 			Arrays.asList(Blocks.AIR, Blocks.WATER, Blocks.LAVA));
-	private final ArrayList<Block> ALLOWED_BLOCKS = new ArrayList<Block>(Arrays.asList(OUTSIDE_FILLER_BLOCK.getBlock(),
-			AIR.getBlock(), BRIDGE_BLOCK.getBlock(), FENCE_BLOCK.getBlock(), DOME_BLOCK.getBlock()));
+	private final ArrayList<Block> ALLOWED_BLOCKS = new ArrayList<Block>(
+			Arrays.asList(AIR.getBlock(), FENCE_BLOCK.getBlock()));
 	public final int BRIDGE_WIDTH = 2;
 	public final int BRIDGE_HEIGHT = 4;
 	private final INoiseGenerator surfaceDepthNoise2;
+	private final BiosphereGenSettings genSettings;
 
 	private static final int noiseSizeX = 4;
 	private static final int noiseSizeY = 32;
@@ -67,9 +65,21 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 		}
 	};
 
-	public BiosphereChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn,
-			OverworldGenSettings generationSettingsIn) {
-		super(worldIn, biomeProviderIn, generationSettingsIn);
+	public BiosphereChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn, BiosphereGenSettings genSettings) {
+		super(worldIn, biomeProviderIn, genSettings);
+
+		this.genSettings = genSettings;
+
+		this.DOME_BLOCK = this.genSettings.domeBlock;
+		this.BRIDGE_BLOCK = this.genSettings.bridgeBlock;
+		this.OUTSIDE_FILLER_BLOCK = this.genSettings.outsideFillerBlock;
+		this.ALLOWED_BLOCKS.add(DOME_BLOCK.getBlock());
+		this.ALLOWED_BLOCKS.add(BRIDGE_BLOCK.getBlock());
+		this.ALLOWED_BLOCKS.add(OUTSIDE_FILLER_BLOCK.getBlock());
+
+		Sphere.minRadius = this.genSettings.sphereMinRadius;
+		Sphere.maxRadius = this.genSettings.sphereMaxRadius;
+		Sphere.midY = this.genSettings.sphereMidY;
 
 		try {
 			@SuppressWarnings("rawtypes")
@@ -94,8 +104,8 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 				Biome biome = region.getBiome(pos);
 				biome.buildSurface(sphere.getRandom(), chunkIn, pos.getX(), pos.getZ(),
 						chunkIn.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ()),
-						this.getSurfaceDepthNoise(pos), INSIDE_FILLER_BLOCK, LAKE_FLUID_BLOCK, this.getSeaLevel(),
-						region.getSeed());
+						this.getSurfaceDepthNoise(pos), this.genSettings.getDefaultBlock(),
+						this.genSettings.getDefaultFluid(), this.getSeaLevel(), region.getSeed());
 			}
 		}
 	}
@@ -181,15 +191,19 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 			BlockState state = null;
 			int sphereDistance = sphere.getDistanceToCenter(pos);
 			if (pos.getY() < this.getSeaLevel() && sphereDistance < sphere.radius) {
-				state = LAKE_FLUID_BLOCK;
+				state = this.genSettings.getDefaultFluid();
 			}
 			if (noises[Math.abs(pos.getX()) % 16][this.correctYValue(pos.getY())][Math.abs(pos.getZ()) % 16] > 0.0D) {
 				if (sphereDistance <= sphere.radius) {
-					state = INSIDE_FILLER_BLOCK;
+					state = this.genSettings.getDefaultBlock();
 				}
 			}
 			if (state != null && !state.isAir()) {
 				chunkIn.setBlockState(pos, state, false);
+			}
+
+			if (sphereDistance > sphere.radius) {
+				chunkIn.setBlockState(pos, OUTSIDE_FILLER_BLOCK, false);
 			}
 
 			if (sphereDistance >= sphere.radius) {
@@ -344,7 +358,7 @@ public class BiosphereChunkGenerator<C extends GenerationSettings> extends Overw
 
 	@Override
 	public int getSeaLevel() {
-		return 100;
+		return this.genSettings.sphereMidY;
 	}
 
 	public int correctYValue(int yIn) {

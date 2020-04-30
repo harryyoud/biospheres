@@ -19,11 +19,11 @@ public class Sphere {
 	private final ChunkPos centreChunk;
 	private final Random rnd;
 	private final Biome biome;
-	private final int minRadius = 40;
-	private final int maxRadius = 100;
+	static int minRadius;
+	static int maxRadius;
+	static int midY;
 	public final int radius;
 	public static final int gridSize = 15;
-	public static final int midY = 100;
 	private HashMap<Direction, BlockPos> bridgeJoin = new HashMap<Direction, BlockPos>();
 	private ArrayList<MutableBoundingBox> domeCutouts = new ArrayList<MutableBoundingBox>();
 
@@ -91,7 +91,7 @@ public class Sphere {
 		return this.biome;
 	}
 
-	public BlockPos computeBridgeJoin(BiosphereChunkGenerator<?> chunkGen, Direction dir) {
+	public BlockPos computeBridgeJoin(BiosphereChunkGenerator chunkGen, Direction dir) {
 		BlockPos fromCache = this.bridgeJoin.get(dir);
 		if (fromCache != null) {
 			return fromCache;
