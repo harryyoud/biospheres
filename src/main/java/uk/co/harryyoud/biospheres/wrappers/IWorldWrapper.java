@@ -51,6 +51,7 @@ public class IWorldWrapper implements IWorld {
 
 	public final IWorld world;
 	public final int seaLevel;
+	private Predicate<BlockPos> blockStatePredicate;
 
 	public IWorldWrapper(IWorld world, int seaLevel) {
 		this.world = world;
@@ -62,14 +63,23 @@ public class IWorldWrapper implements IWorld {
 		return this.seaLevel;
 	}
 
-	@Override
-	public boolean hasBlockState(BlockPos p_217375_1_, Predicate<BlockState> p_217375_2_) {
-		return world.hasBlockState(p_217375_1_, p_217375_2_);
+	public void setBlockStatePredicate(Predicate<BlockPos> f) {
+		this.blockStatePredicate = f;
 	}
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
+		if (!this.blockStatePredicate.test(pos)) {
+			return false;
+		}
 		return world.setBlockState(pos, newState, flags);
+	}
+
+	// ECLIPSE AUTO-GENERATE DELEGATE METHODS
+
+	@Override
+	public boolean hasBlockState(BlockPos p_217375_1_, Predicate<BlockState> p_217375_2_) {
+		return world.hasBlockState(p_217375_1_, p_217375_2_);
 	}
 
 	@Override

@@ -111,7 +111,12 @@ public class BiosphereChunkGenerator extends OverworldChunkGenerator {
 
 	@Override
 	public void decorate(WorldGenRegion region) {
-		IWorld worldWrapper = new IWorldWrapper(region, this.getSeaLevel());
+		IWorldWrapper worldWrapper = new IWorldWrapper(region, this.getSeaLevel());
+		worldWrapper.setBlockStatePredicate((pos) -> {
+			@SuppressWarnings("deprecation")
+			Sphere sphere = Sphere.getClosest(region.getWorld(), pos);
+			return sphere.getDistanceToCenter(pos) < sphere.radius;
+		});
 
 		// COPY PASTED FROM PARENT, with region replaced with worldWrapper
 		int i = region.getMainChunkX();
