@@ -263,6 +263,7 @@ public class BiosphereChunkGenerator extends OverworldChunkGenerator {
 							|| Utils.getCoord(pos, otherAxis) == Utils.getCoord(sphere.getCentre(), otherAxis)
 									- BRIDGE_WIDTH)) {
 						chunkIn.setBlockState(pos, FENCE_BLOCK, false);
+						chunkIn.markBlockForPostprocessing(pos);
 					}
 				}
 			}
