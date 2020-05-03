@@ -119,10 +119,10 @@ public class BiosphereConfig {
 			this.sphereMidY = builder
 					.comment("Sea level (aka vertical midpoint of spheres)\n"
 							+ "This should be between sphereMaxRadius and (256 - sphereMaxRadius)")
-					.defineInRange("sphereMidY", 100, 0, 255);
+					.defineInRange("sphereMidY", 63, 0, 255);
 			this.sphereMinRadius = builder
 					.comment("Minimum sphere radius")
-					.defineInRange("sphereMinRadius", 40, 15, 100);
+					.defineInRange("sphereMinRadius", 63, 15, 100);
 			this.sphereMaxRadius = builder
 					.comment("Maximum sphere radius")
 					.defineInRange("sphereMaxRadius", 100, 15, 100);

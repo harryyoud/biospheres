@@ -373,7 +373,13 @@ public class BiosphereChunkGenerator extends OverworldChunkGenerator {
 		// up from the sea
 		int seaLevelDiff = this.getSeaLevel() - 63;
 		int newY = yIn - seaLevelDiff;
-		return Math.max(0, newY);
+		if (newY > 255) {
+			return 255;
+		}
+		if (newY < 0) {
+			return 0;
+		}
+		return newY;
 	}
 
 	@Override
