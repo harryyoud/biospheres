@@ -3,6 +3,7 @@ package uk.co.harryyoud.biospheres;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,12 +15,15 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.server.dedicated.ServerProperties;
 import net.minecraft.world.WorldType;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 import uk.co.harryyoud.biospheres.config.BiosphereConfig;
 import uk.co.harryyoud.biospheres.config.BiosphereGenSettingsSerializer;
 
@@ -32,6 +36,10 @@ public class Biospheres {
 
 	public Biospheres() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::dedicatedServerSetup);
+		// Ignore server and client version mismatch, since mod is only relevant on
+		// logical server
+		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
+				() -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		BiosphereConfig.setup();
 	}
 
