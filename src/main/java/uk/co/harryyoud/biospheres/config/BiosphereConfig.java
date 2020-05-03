@@ -5,7 +5,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -174,7 +174,7 @@ public class BiosphereConfig {
 			builder.push("biomes");
 			this.bannedBiomes = builder
 					.comment("Don't use these biomes")
-					.defineList("bannedBiomes", new ArrayList<String>(),
+					.defineList("bannedBiomes", Arrays.asList(Biomes.THE_VOID.getRegistryName().toString()),
 							(s) -> ForgeRegistries.BIOMES.containsKey(new ResourceLocation((String) s)));
 			this.bannedBiomeCategories = builder
 					.comment("Don't use these biome categories")
