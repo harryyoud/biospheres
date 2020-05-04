@@ -1,6 +1,7 @@
 {
 	"homepage": "https://github.com/harryyoud/biospheres",
 	"1.15.2": {
+		"999.9.9": "Please download the mod from the official source by harryyoud - https://www.curseforge.com/minecraft/mc-mods/biospheres \n, Wolferus__ is rehosting my work without crediting me",
 		"1.0.4": "Change config defaults to fix ore generation. You need to delete your config file for this to take effect, or you can just change the values in there",
 		"1.0.3": "Disabled THE_VOID biome, and disabled client-server version checking",
 		"1.0.2": "Fixed fence connections",
@@ -8,7 +9,7 @@
 		"1.0.0": "Initial release"
 	},
 	"promos": {
-		"1.15.2-latest": "1.0.4",
-		"1.15.2-recommended": "1.0.4"
+		"1.15.2-latest": "999.9.9",
+		"1.15.2-recommended": "999.9.9"
 	}
 }
