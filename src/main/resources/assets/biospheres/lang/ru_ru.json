@@ -1,0 +1,14 @@
+{
+	"biospheres.generatorname": "Биосферы",
+	"biospheres.gui.title": "Биосферы: настройки мира",
+	"biospheres.gui.default.label": "%s Недействительный",
+	"biospheres.gui.block.invalid": "%s Блок недействителен",
+	"biospheres.gui.int.invalid": "%s Не целое число",
+	"biospheres.gui.intRange.invalid": "%s Должно быть между %d и %d",
+	"biospheres.gui.domeBlock.label": "Блок куполов",
+	"biospheres.gui.bridgeBlock.label": "Блок мостов",
+	"biospheres.gui.outsideFillerBlock.label": "Блок внешнего наполнителя",
+	"biospheres.gui.sphereMidY.label": "Y середина сфер",
+	"biospheres.gui.sphereMinRadius.label": "Минимальный радиус сферы",
+	"biospheres.gui.sphereMaxRadius.label": "Максимальный радиус сферы"
+}
